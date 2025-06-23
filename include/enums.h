@@ -51,4 +51,4 @@ enum class Nature { //Numerical values are defined based on which stat is raised
     Sassy=19,
     Serious=24,
     Timid=20
-}
+};

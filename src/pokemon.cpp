@@ -2,11 +2,11 @@
 #include <stdexcept>
 #include <numeric>
 std::atomic<int> Pokemon::idCounter = 0;
-Pokemon::Pokemon(PokedexEntry* species,
-                 const std::string& nature,
+Pokemon::Pokemon(const PokedexEntry* species,
+                 Nature nature,
                  const std::string& nickname,
-                 const std::array<int, 6> EVs,
-                 const std::array<int, 6> IVs,
+                 const std::array<int, 6>& EVs,
+                 const std::array<int, 6>& IVs,
                  int level)
     : species(species),
       nature(nature),
@@ -33,17 +33,17 @@ Pokemon::Pokemon(PokedexEntry* species,
     this->stats = computeStats(this->species, this->nature, this->EVs, this->IVs, this->level);
 }
 //Getter methods
-std::array<int, 6>& Pokemon::getEVs() const { return EVs; }
-std::array<int, 6>& Pokemon::getIVs() const { return IVs; }
-std::array<int, 6>& Pokemon::getStats() const { return stats; }
+const std::array<int, 6>& Pokemon::getEVs() const { return EVs; }
+const std::array<int, 6>& Pokemon::getIVs() const { return IVs; }
+const std::array<int, 6>& Pokemon::getStats() const { return stats; }
 int Pokemon::getLevel() const { return level; }
 Nature Pokemon::getNature() const { return nature; }
-std::string Pokemon::getNickname() const { return nickname; }
-PokedexEntry* Pokemon::getSpecies() const { return species; }
+const std::string& Pokemon::getNickname() const { return nickname; }
+const PokedexEntry* Pokemon::getSpecies() const { return species; }
 
 //Used to compute the stats for each pokemon based on base stats, level, natures, IVs, and EVs.
-std::array<int, 6> Pokemon::computeStats(PokedexEntry* species, Nature nature,
-                                const std::array<int, 6>& EVs,
+std::array<int, 6> Pokemon::computeStats(const PokedexEntry* species, Nature nature,
+                                std::array<int, 6>& EVs,
                                 const std::array<int, 6>& IVs,
                                 int level) {
     std::array<int, 6> stats = {

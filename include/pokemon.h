@@ -7,12 +7,12 @@
 
 class Pokemon {
 public:
-    Pokemon(PokedexEntry* species,
-            const Nature nature,
+    Pokemon(const PokedexEntry* species,
+            Nature nature,
             const std::string& nickname,
             const std::array<int, 6>& EVs,
             const std::array<int, 6>& IVs,
-            const int level);
+            int level);
     
     //getter methods
     const std::array<int, 6>& getEVs() const;
@@ -20,13 +20,13 @@ public:
     const std::array<int, 6>& getStats() const;
     int getLevel() const;
     Nature getNature() const;
-    std::string& getNickname() const;
+    const std::string& getNickname() const;
     const PokedexEntry* getSpecies() const;
-    std::array<int, 6> computeStats(PokedexEntry* species, Nature nature, std::array<int, 6> EVs, std::array<int, 6> IVs, int level);
+    std::array<int, 6> computeStats(const PokedexEntry* species, Nature nature, std::array<int, 6>& EVs, const std::array<int, 6>& IVs, int level);
 
     //setter methods
     void setEVs(const std::array<int, 6>& newEVs);
-    void setLevel(const int level)
+    void setLevel(const int level);
     void setNickname(const std::string& newNickname);
 
 private:

@@ -26,7 +26,8 @@ public:
     std::string getDescription() const;
 
 private:
-    const std::string name, type1, type2, description;
+    const std::string name, description;
+    Type type1, type2;
     const int base_hp, base_atk, base_def, base_sp_atk, base_sp_def, base_speed;
     const double height, weight;
 };
