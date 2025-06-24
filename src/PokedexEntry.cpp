@@ -1,6 +1,7 @@
 #include <string>
 #include "PokedexEntry.h"
 #include <stdexcept>
+#include <iostream>
 
 // Constructor
 PokedexEntry::PokedexEntry(const std::string& name,
@@ -27,7 +28,7 @@ PokedexEntry::PokedexEntry(const std::string& name,
         throw std::invalid_argument("Primary type cannot be None. ");
     }
     if (type2 == type1){
-        type2 = Type::None;
+        this->type2 = Type::None;
     }
 }
 

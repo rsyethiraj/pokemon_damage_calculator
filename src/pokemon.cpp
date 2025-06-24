@@ -1,6 +1,7 @@
 #include "pokemon.h"
 #include <stdexcept>
 #include <numeric>
+#include <iostream> //Used in debugging, not needed.
 std::atomic<int> Pokemon::idCounter = 0;
 Pokemon::Pokemon(const PokedexEntry* species,
                  Nature nature,
@@ -66,7 +67,6 @@ std::array<int, 6> Pokemon::computeStats(const PokedexEntry* species, Nature nat
     int nature_value = static_cast<int>(nature);
     int increased_stat = nature_value / 5; 
     int decreased_stat = nature_value % 5;
-
     for (int i = 1; i < 6; i++) {
         double modifier = 1.0;
         if (i - 1 == increased_stat && increased_stat != decreased_stat) {
@@ -95,6 +95,7 @@ void Pokemon::setEVs(const std::array<int, 6>& EVs) {
     if (totalEVs > 510)
         throw std::invalid_argument("Total EVs must not exceed 510.");
     this->EVs = EVs;
+    this->stats = computeStats(this->species, this->nature, this->EVs, this->IVs, this->level);
 }
 
 void Pokemon::setNickname(const std::string& nickname) { this->nickname = nickname; }
@@ -103,4 +104,5 @@ void Pokemon::setLevel(const int level) {
         throw std::invalid_argument("Level must be in [1, 100]");
     }
     this->level = level;
+    this->stats = computeStats(this->species, this->nature, this->EVs, this->IVs, this->level);
 }
