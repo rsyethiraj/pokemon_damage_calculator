@@ -52,3 +52,18 @@ enum class Nature { //Numerical values are defined based on which stat is raised
     Serious=24,
     Timid=20
 };
+
+enum class MoveType {
+    Physical,
+    Special,
+    Status
+};
+
+enum class StatusCondition {
+    Asleep,
+    Burned,
+    Frozen,
+    Paralyzed,
+    Poisoned,
+    Toxic-Poisoned
+};
