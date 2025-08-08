@@ -1,8 +1,7 @@
 #pragma once
 
 enum class Type {
-    None,
-    Normal,
+    Normal= 0,
     Fire,
     Water,
     Grass,
@@ -19,13 +18,16 @@ enum class Type {
     Dragon,
     Dark,
     Steel,
-    Fairy
+    Fairy,
+    COUNT, //Counts how many types there are
+    None //Nonetype
 };
 
 enum class Nature { //Numerical values are defined based on which stat is raised/lowered
     //values where x//5 = y raise the y+1 stat
     // Values where x % 5 = y lower the y+1 stat
     // Since adamant=2, 2 //5 = 0 and 2 % 5 = 2, we can conclude it raises the 1st stat (attack) and lowers the third (Sp Atk).
+    //Crucially, note that no natures modify the HP stat. 
     Adamant=2,
     Bashful=12,
     Bold=5,
@@ -60,10 +62,21 @@ enum class MoveType {
 };
 
 enum class StatusCondition {
+    None,
     Asleep,
     Burned,
     Frozen,
     Paralyzed,
     Poisoned,
-    Toxic-Poisoned
+    ToxicPoisoned
+};
+
+enum class Weather {
+    None,
+    Sun,
+    ExtremeSun,
+    Rain,
+    ExtremeRain,
+    Hail,
+    Sand
 };

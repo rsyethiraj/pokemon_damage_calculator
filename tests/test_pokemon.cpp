@@ -3,7 +3,7 @@
 #include "PokedexEntry.h"
 
 TEST_CASE("Pokemon stats are calculated correctly", "[Pokemon]") {
-    PokedexEntry pikachu("Pikachu", Type::Electric, Type::None, 35, 55, 40, 50, 50, 90, 0.4, 6.0, "Electric mouse");
+    PokedexEntry pikachu("Pikachu", Type::Electric, Type::None, 35, 55, 40, 50, 50, 90, 0.4f, 6.0f, "Electric mouse");
     
     std::array<int, 6> EVs = {0, 0, 0, 0, 0, 0};
     std::array<int, 6> IVs = {31, 31, 31, 31, 31, 31};
@@ -98,7 +98,7 @@ TEST_CASE("Pokemon stats are calculated correctly", "[Pokemon]") {
         REQUIRE(stats[5] == 216);
     }
     //Creates a new pokemon with a boosting nature
-    PokedexEntry LopunnyMega("Lopunny-Mega", Type::Normal, Type::Fighting, 65, 136, 94, 54, 96, 135, 1.3, 28.3, "The mega evolution of Lopunny. A powerful and fast physical attacker. ");
+    PokedexEntry LopunnyMega("Lopunny-Mega", Type::Normal, Type::Fighting, 65, 136, 94, 54, 96, 135, 1.3f, 28.3f, "The mega evolution of Lopunny. A powerful and fast physical attacker. ");
     EVs = {0, 252, 4, 0, 0, 252};
     Pokemon ml(&LopunnyMega, Nature::Jolly, "", EVs, IVs, 100);
     stats = ml.getStats();
@@ -120,8 +120,8 @@ TEST_CASE("Pokemon stats are calculated correctly", "[Pokemon]") {
     SECTION("Speed stat calculation") {
         REQUIRE(stats[5] == 405);
     }
-    //Tests on the case where HP stat is equal to 1 (Shedinja
-    PokedexEntry Shedinja("Shedinja", Type::Bug, Type::Ghost, 1, 90, 45, 30, 30, 40, 0.8, 1.2, "A strange pokemon with 1 hit point that only takes damage from super-effective attacks");
+    //Tests on the case where HP stat is equal to 1 (Shedinja)
+    PokedexEntry Shedinja("Shedinja", Type::Bug, Type::Ghost, 1, 90, 45, 30, 30, 40, 0.8f, 1.2f, "A strange pokemon with 1 hit point that only takes damage from super-effective attacks");
     EVs = {0, 0, 0, 0, 0, 0};
     Pokemon s(&Shedinja, Nature::Hardy, "", EVs, IVs, 100);
     stats = s.getStats();
@@ -149,17 +149,17 @@ TEST_CASE("Input errors are properly handled", "[Pokemon][Exception], [PokedexEn
     //Checks if the Type fields are properly created/modified
     SECTION("Initializes type1 as None") {
         REQUIRE_THROWS_AS(
-            PokedexEntry("Shedinja", Type::None, Type::None, 1, 90, 45, 30, 30, 40, 0.8, 1.2, "A strange pokemon with 1 hit point that only takes damage from super-effective attacks"), std::invalid_argument);
+            PokedexEntry("Shedinja", Type::None, Type::None, 1, 90, 45, 30, 30, 40, 0.8f, 1.2f, "A strange pokemon with 1 hit point that only takes damage from super-effective attacks"), std::invalid_argument);
     }
     SECTION("Initializes type2=type1") {
-        PokedexEntry pikachu("Pikachu", Type::Electric, Type::Electric, 35, 55, 40, 50, 50, 90, 0.4, 6.0, "Electric mouse");
+        PokedexEntry pikachu("Pikachu", Type::Electric, Type::Electric, 35, 55, 40, 50, 50, 90, 0.4f, 6.0f, "Electric mouse");
         REQUIRE(pikachu.getType1() == Type::Electric);
         REQUIRE(pikachu.getType2() == Type::None);
     }
     
     std::array<int, 6> IVs = {0, 0, 0, 0, 0, 0};
     std::array<int, 6> badEVs = {256, 0, 0, 0, 0, 0};
-    PokedexEntry pikachu("Pikachu", Type::Electric, Type::None, 35, 55, 40, 50, 50, 90, 0.4, 6.0, "Electric mouse");
+    PokedexEntry pikachu("Pikachu", Type::Electric, Type::None, 35, 55, 40, 50, 50, 90, 0.4f, 6.0f, "Electric mouse");
     SECTION("Initializes Pokemon with Bad EVs") {
         REQUIRE_THROWS_AS(Pokemon(&pikachu, Nature::Hardy, "Sparky", badEVs, IVs, 50), std::invalid_argument);
         badEVs = {3, 0, -10, 0, 0, 0};

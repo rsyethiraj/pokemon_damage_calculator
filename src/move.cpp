@@ -11,6 +11,8 @@ Move::Move(const std::string& name,
            int max_hits,
            bool inv_defense,
            bool opp_attack,
+           bool direct_damage,
+           int direct_damage_amount,
            const std::string& description)
     : name(name),
       move_type(move_type),
@@ -21,6 +23,8 @@ Move::Move(const std::string& name,
       max_hits(max_hits),
       inv_defense(inv_defense),
       opp_attack(opp_attack),
+      direct_damage(direct_damage),
+      direct_damage_amount(direct_damage_amount),
       description(description)
 {
     if (type1 == Type::None && type2 != Type::None) {
@@ -44,4 +48,6 @@ bool Move::getMultiHitStatus() const { return multi_hit; }
 int Move::getMaxHits() const { return multi_hit ? max_hits : 1; }
 bool Move::usesInvDefense() const { return inv_defense; }
 bool Move::usesOppAttack() const { return opp_attack; }
+bool Move::dealsDirectDamage() const {return direct_damage; }
+int Move::getDirectDamageAmount() const {return direct_damage_amount; }
 const std::string& Move::getDescription() const { return description; }
