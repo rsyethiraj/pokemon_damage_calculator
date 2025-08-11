@@ -464,3 +464,142 @@ TEST_CASE("Neutral Damage situations work properly") {
     expected = {225, 228, 229, 232, 235, 238, 241, 243, 246, 249, 252, 253, 256, 259, 262, 265};
     REQUIRE(damage_rolls == expected);
 }
+
+TEST_CASE("Super/Not very effective damage cases work properly") {
+    PokedexEntry Haxorus("Haxorus", Type::Dragon, Type::None, 76, 147, 90, 60, 70, 97, 1.8f, 105.5f, "They are kind but can be relentless when defending territory. They challenge foes with tusks that can cut steel. ");
+    PokedexEntry Garchomp("Garchomp", Type::Dragon, Type::Ground, 108, 130, 95, 80, 85, 102, 1.9f, 95.0f, "When it folds up its body and extends its wings, it looks like a jet plane. It flies at sonic speed. ");
+    PokedexEntry Volcanion("Volcanion", Type::Fire, Type::Water, 80, 110, 120, 130, 90, 70, 1.7f, 195.0f, "It lets out billows of steam and disappears into the dense fog. It’s said to live in mountains where humans do not tread." );
+    PokedexEntry Glaceon("Glaceon", Type::Ice, Type::None, 65, 60, 110, 130, 95, 65, 0.8f, 25.9f, "Icy dog");
+    Move DragonClaw("Dragon Claw", MoveType::Physical, 80, Type::Dragon, Type::None, false, 1, false, false, false, 0, "The target is raked with draconic claws. ");
+    Move Thunderbolt("Thunderbolt", MoveType::Special, 90, Type::Electric, Type::None, false, 1, false, false, false, 0, "The target is hit with a bolt of electricity. ");
+    Move Flamethrower("Flamethrower", MoveType::Special, 90, Type::Fire, Type::None, false, 1, false, false, false, 0, "The target is hit with a bolt of fire. ");
+    Move IcePunch("Ice Punch", MoveType::Physical, 75, Type::Ice, Type::None, false, 1, false, false, false, 0, "The target is hit with an icy fist. ");
+
+    std::array<int, 6> EVs = {0, 252, 4, 0, 0, 252};
+    std::array<int, 6> IVs = {31, 31, 31, 31, 31, 31};
+    Pokemon hax(&Haxorus, Nature::Jolly, "", EVs, IVs, 100);
+    Pokemon gar(&Garchomp, Nature::Jolly, "", EVs, IVs, 100);
+    Pokemon vol(&Volcanion, Nature::Modest, "", EVs, IVs, 100);
+    //2x effective with STAB
+    std::vector<int> damage_rolls = DamageCalculator::compute_damage_rolls(hax, gar, DragonClaw, Weather::None, false);
+    std::vector<int> expected = {300, 302, 306, 308, 314, 318, 320, 324, 326, 330, 336, 338, 342, 344, 348, 354};
+    REQUIRE(damage_rolls == expected);
+    //2x effective w/o STAB
+    damage_rolls = DamageCalculator::compute_damage_rolls(vol, gar, DragonClaw, Weather::None, false);
+    expected = {146, 146, 148, 150, 152, 154, 156, 158, 158, 160, 162, 164, 166, 168, 170, 172};
+    REQUIRE(damage_rolls == expected);
+
+    //4x effective with STAB
+    
+    //4x effective w/o STAB
+    damage_rolls = DamageCalculator::compute_damage_rolls(hax, gar, IcePunch, Weather::None, false);
+    expected = {376, 380, 384, 388, 392, 396, 404, 408, 412, 416, 420, 424, 428, 432, 436, 444};
+    REQUIRE(damage_rolls == expected);
+
+    //0.5x effective with STAB
+    damage_rolls = DamageCalculator::compute_damage_rolls(vol, gar, Flamethrower, Weather::None, false);
+    expected = {76, 78, 78, 79, 80, 81, 82, 83, 84, 84, 85, 87, 87, 88, 89, 90};
+    REQUIRE(damage_rolls == expected);
+
+    //0.5x effective w/o STAB
+    damage_rolls = DamageCalculator::compute_damage_rolls(hax, gar, Flamethrower, Weather::None, false);
+    expected = {22, 22, 23, 23, 23, 23, 24, 24, 24, 24, 25, 25, 25, 25, 26, 26};
+    REQUIRE(damage_rolls == expected);
+
+    //0.25x effective with STAB
+    damage_rolls = DamageCalculator::compute_damage_rolls(vol, vol, Flamethrower, Weather::None, false);
+    expected = {36, 36, 37, 37, 38, 38, 39, 39, 39, 40, 40, 41, 41, 42, 42, 43};
+    REQUIRE(damage_rolls == expected);
+
+    //0.25x effective w/o STAB
+    damage_rolls = DamageCalculator::compute_damage_rolls(gar, vol, Flamethrower, Weather::None, false);
+    expected = {13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14, 15, 15, 15, 15, 15};
+    REQUIRE(damage_rolls == expected);
+
+    //0x Effective
+    damage_rolls = DamageCalculator::compute_damage_rolls(hax, gar, Thunderbolt, Weather::None, false);
+    expected = {0};
+    REQUIRE(damage_rolls == expected);
+}
+
+TEST_CASE("Weather cases") {
+    PokedexEntry Volcanion("Volcanion", Type::Fire, Type::Water, 80, 110, 120, 130, 90, 70, 1.7f, 195.0f, "It lets out billows of steam and disappears into the dense fog. It’s said to live in mountains where humans do not tread." );
+    PokedexEntry MegaSceptile("Sceptile-Mega", Type::Grass, Type::Dragon, 70, 110, 75, 145, 85, 145, 1.9f, 55.2f, "A powerful and fast special attacker. It uses its tail as a projectile. ");
+    PokedexEntry Tyranitar("Tyranitar", Type::Rock, Type::Dark, 100, 134, 110, 95, 100, 81, 2.0f, 202.0f, "A powerful pokemon that summons a sandstorm in battle. ");
+    Move Flamethrower("Flamethrower", MoveType::Special, 90, Type::Fire, Type::None, false, 1, false, false, false, 0, "The target is hit with a blast of fire. ");
+    Move Scald("Scald", MoveType::Special, 80, Type::Water, Type::None, false, 1, false, false, false, 0, "The target is hit with a blast of boiling water. ");
+    
+    std::array<int, 6> EVs = {0, 252, 4, 0, 0, 252};
+    std::array<int, 6> IVs = {31, 31, 31, 31, 31, 31};
+    Pokemon vol(&Volcanion, Nature::Modest, "", EVs, IVs, 100);
+    Pokemon tar(&Tyranitar, Nature::Adamant, "", EVs, IVs, 100);
+    Pokemon sce(&MegaSceptile, Nature::Jolly, "", EVs, IVs, 100);
+    //Water Type move during rain
+    std::vector<int> damage_rolls = DamageCalculator::compute_damage_rolls(vol, sce, Scald, Weather::Rain, false);
+    std::vector<int> expected = {51, 52, 52, 53, 54, 54, 55, 55, 56, 57, 57, 58, 58, 59, 60, 60};
+    REQUIRE(damage_rolls == expected);
+    //Water type move during sun
+    damage_rolls = DamageCalculator::compute_damage_rolls(vol, sce, Scald, Weather::Sun, false);
+    expected = {16, 17, 17, 17, 18, 18, 18, 18, 18, 18, 19, 19, 19, 19, 19, 20};
+    REQUIRE(damage_rolls == expected);
+
+    //Water type move during extreme sun
+    damage_rolls = DamageCalculator::compute_damage_rolls(vol, sce, Scald, Weather::ExtremeSun, false);
+    expected = {0};
+    REQUIRE(damage_rolls == expected);
+
+    //Fire Type move during rain
+    damage_rolls = DamageCalculator::compute_damage_rolls(vol, sce, Flamethrower, Weather::Rain, false);
+    expected = {76, 76, 78, 78, 79, 81, 81, 82, 82, 84, 85, 85, 87, 87, 88, 90};
+    REQUIRE(damage_rolls == expected);
+
+    //Fire Type move during extreme rain
+    damage_rolls = DamageCalculator::compute_damage_rolls(vol, sce, Flamethrower, Weather::ExtremeRain, false);
+    expected = {0};
+    REQUIRE(damage_rolls == expected);
+
+    //Fire type move during sun
+    damage_rolls = DamageCalculator::compute_damage_rolls(vol, sce, Flamethrower, Weather::Sun, false);
+    expected = {229, 232, 235, 238, 241, 243, 246, 249, 252, 255, 256, 259, 262, 265, 268, 271};
+    REQUIRE(damage_rolls == expected);
+
+    //Special move used against a rock type in sand
+    damage_rolls = DamageCalculator::compute_damage_rolls(vol, tar, Scald, Weather::Sand, false);
+    expected = {158, 162, 162, 164, 168, 168, 170, 170, 174, 176, 176, 180, 182, 182, 186, 188};
+    REQUIRE(damage_rolls == expected);
+}
+
+TEST_CASE("Different levels") {
+    PokedexEntry Glaceon("Glaceon", Type::Ice, Type::None, 65, 60, 110, 130, 95, 65, 0.8f, 25.9f, "Icy dog");
+    PokedexEntry Garchomp("Garchomp", Type::Dragon, Type::Ground, 108, 130, 95, 80, 85, 102, 1.9f, 95.0f, "When it folds up its body and extends its wings, it looks like a jet plane. It flies at sonic speed. ");
+    Move IceFang("Ice Fang", MoveType::Physical, 65, Type::Ice, Type::None, false, 1, false, false, false, 0, "The target is bitten with icy fangs. ");
+    std::array<int, 6> EVs = {0, 28, 0, 0, 0, 0};
+    std::array<int, 6> IVs = {31, 31, 21, 31, 31, 31};
+    Pokemon gla(&Glaceon, Nature::Hardy, "", EVs, IVs, 75);
+    Pokemon gar(&Garchomp, Nature::Hardy, "", EVs, IVs, 75);
+    std::vector<int> damage_rolls = DamageCalculator::compute_damage_rolls(gla, gar, IceFang, Weather::None, false);
+    std::vector<int> expected = {168, 168, 168, 172, 172, 172, 180, 180, 180, 184, 184, 184, 192, 192, 192, 196};
+    REQUIRE(damage_rolls == expected);
+    gla.setLevel(73);
+    damage_rolls = DamageCalculator::compute_damage_rolls(gla, gar, IceFang, Weather::None, false);
+    expected = {156, 156, 156, 160, 160, 160, 168, 168, 168, 172, 172, 172, 180, 180, 180, 184};
+    REQUIRE(damage_rolls == expected);
+
+}
+
+TEST_CASE("OHKO/THKO chances") {
+    PokedexEntry Glaceon("Glaceon", Type::Ice, Type::None, 65, 60, 110, 130, 95, 65, 0.8f, 25.9f, "Icy dog");
+    PokedexEntry Garchomp("Garchomp", Type::Dragon, Type::Ground, 108, 130, 95, 80, 85, 102, 1.9f, 95.0f, "When it folds up its body and extends its wings, it looks like a jet plane. It flies at sonic speed. ");
+    Move Blizzard("Blizzard", MoveType::Special, 110, Type::Ice, Type::None, false, 1, false, false, false, 0, "The target is blasted with a cold blast of wind. ");
+    std::array<int, 6> EVs = {0, 28, 0, 0, 0, 0};
+    std::array<int, 6> IVs = {31, 31, 21, 31, 31, 31};
+
+    Pokemon gla(&Glaceon, Nature::Hardy, "", EVs, IVs, 75);
+    Pokemon gar(&Garchomp, Nature::Hardy, "", EVs, IVs, 75);
+    std::vector<int> damage_rolls = DamageCalculator::compute_damage_rolls(gla, gar, Blizzard, Weather::None, false);
+    REQUIRE(DamageCalculator::compute_ohko_chance(damage_rolls, gar.getStats()[0]) == 1.0f);
+    gla.setLevel(50);
+    damage_rolls = DamageCalculator::compute_damage_rolls(gla, gar, Blizzard, Weather::None, false);
+    REQUIRE(DamageCalculator::compute_ohko_chance(damage_rolls, gar.getStats()[0]) == 0.3125f);
+    REQUIRE(DamageCalculator::compute_thko_chance(damage_rolls, gar.getStats()[0]) == 1.0f);
+}

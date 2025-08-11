@@ -19,7 +19,7 @@ std::vector<int> DamageCalculator::compute_damage_rolls(Pokemon& attacker, Pokem
     const PokedexEntry* attacker_species = attacker.getSpecies();
     const PokedexEntry* defender_species = defender.getSpecies();
 
-    float type_effectiveness = DamageCalculator::calculate_type_effectiveness(attacker_species->getType1(), attacker_species->getType2(), defender_species->getType1(), defender_species->getType2());
+    float type_effectiveness = DamageCalculator::calculate_type_effectiveness(move.getType1(), move.getType2(), defender_species->getType1(), defender_species->getType2());
     if (type_effectiveness == 0.0f) {
         return {0};
     }
@@ -124,17 +124,20 @@ std::vector<int> DamageCalculator::compute_damage_rolls(Pokemon& attacker, Pokem
     }
     int damage = std::floor(std::floor(std::floor(2.0 * attacker.getLevel() / 5.0 + 2) * base_power * ad_ratio) / 50.0) + 2;
     //Currently ignores multi-target moves and Parental Bond
-    //Handles rain/sun, no feature for Hydro Steam/Cloud Nine. Doesn't differentiate ebtween extreme/normal sun/rain.
+    //Handles rain/sun, no feature for Hydro Steam/Cloud Nine.
     if ((weather == Weather::Rain || weather == Weather::ExtremeRain) && (move.getType1() == Type::Water ||move.getType2() == Type::Water) || (weather == Weather::Sun || weather == Weather::ExtremeSun) && (move.getType1() == Type::Fire ||move.getType2() == Type::Fire)){
-        damage = round_half_down(damage*1.5);
+        damage = std::floor(damage*1.5);
     }
-    if ((weather == Weather::Rain || weather == Weather::ExtremeRain) && (move.getType1() == Type::Fire ||move.getType2() == Type::Fire) || (weather == Weather::Sun || weather == Weather::ExtremeSun) && (move.getType1() == Type::Water ||move.getType2() == Type::Water)){
-        damage = round_half_down(damage*0.5);
+    if ((weather == Weather::Rain) && (move.getType1() == Type::Fire ||move.getType2() == Type::Fire) || (weather == Weather::Sun) && (move.getType1() == Type::Water ||move.getType2() == Type::Water)){
+        damage = std::floor(damage*0.5);
+    }
+    if ((weather == Weather::ExtremeRain && (move.getType1() == Type::Fire ||move.getType2() == Type::Fire) ) || (weather == Weather::ExtremeSun && (move.getType1() == Type::Water ||move.getType2() == Type::Water))) {
+        return std::vector<int> {0};
     }
     //Ignores Glaive Rush currently
     //Handles Crits
     if (critical == true) {
-        damage = round_half_down(damage*1.5);
+        damage = std::floor(damage*1.5);
     }
     //computes damage rolls
     std::vector<int> result(16);
@@ -143,31 +146,15 @@ std::vector<int> DamageCalculator::compute_damage_rolls(Pokemon& attacker, Pokem
         result[i] = damage * multiplier / 100;
         //STAB
         if (move.getType1() == attacker.getSpecies()->getType1() || move.getType1() == attacker.getSpecies()->getType2()) {
-            result[i] = round_half_down(result[i]*1.5);
+            result[i] = std::floor(result[i]*1.5);
         }
-        result[i] = round_half_down(result[i]*type_effectiveness);
+        result[i] = std::floor(result[i]*type_effectiveness);
         //Handles burn here
     }
 
     return result;
     
 }
-
-//std::vector<int> DamageCalculator::compute_damage_rolls(float raw_damage, bool direct_damage) {
-//    if (direct_damage) {
-//        return {static_cast<int>(std::floor(raw_damage))};
-//    }
-//
-////    int base_damage = static_cast<int>(std::floor(raw_damage));
-//    std::vector<int> result(16);
-//
-//    for (int i = 0; i < 16; i++) {
-//        int multiplier = 85 + i; // 85 to 100 inclusive
-//        result[i] = (raw_damage * multiplier) / 100; // Always integer division
-//    }
-//
-//    return result;
-//}
 
 float DamageCalculator::compute_ohko_chance(std::vector<int> damage_rolls, int hp){
     int length = damage_rolls.size();
@@ -179,7 +166,7 @@ float DamageCalculator::compute_ohko_chance(std::vector<int> damage_rolls, int h
     }
     return static_cast<float>(count) / length;
 }
-float DamageCalculator::compute_tkho_chance(std::vector<int> damage_rolls, int hp){
+float DamageCalculator::compute_thko_chance(std::vector<int> damage_rolls, int hp){
     int length = damage_rolls.size();
     int count = 0;
     for (int i = 0; i < length; i++) {
