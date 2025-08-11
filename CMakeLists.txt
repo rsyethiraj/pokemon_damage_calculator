@@ -10,11 +10,15 @@ include_directories(tests)
 set(SOURCES
     src/Pokemon.cpp
     src/PokedexEntry.cpp
+    src/move.cpp
+    src/damage_calculation.cpp
+    src/typechart.cpp
 )
 
 add_executable(run_tests
     tests/test_main.cpp
     tests/test_pokemon.cpp
     tests/catch_amalgamated.cpp
+    tests/test_damage.cpp
     ${SOURCES}
 )

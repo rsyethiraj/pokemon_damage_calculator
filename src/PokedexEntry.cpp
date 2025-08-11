@@ -9,7 +9,7 @@ PokedexEntry::PokedexEntry(const std::string& name,
                            Type type2,
                            int base_hp, int base_atk, int base_def,
                            int base_sp_atk, int base_sp_def, int base_speed,
-                           double height, double weight,
+                           float height, float weight,
                            const std::string& description)
     : name(name),
       type1(type1),
@@ -42,6 +42,6 @@ int PokedexEntry::getBaseDef() const { return base_def; }
 int PokedexEntry::getBaseSpAtk() const { return base_sp_atk; }
 int PokedexEntry::getBaseSpDef() const { return base_sp_def; }
 int PokedexEntry::getBaseSpeed() const { return base_speed; }
-double PokedexEntry::getHeight() const { return height; }
-double PokedexEntry::getWeight() const { return weight; }
+float PokedexEntry::getHeight() const { return height; }
+float PokedexEntry::getWeight() const { return weight; }
 std::string PokedexEntry::getDescription() const { return description; }
